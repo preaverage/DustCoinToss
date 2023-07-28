@@ -1,0 +1,54 @@
+.center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.center img {
+  width: 100px;
+  margin-bottom: 25px;
+}
+
+.center img.spin {
+  animation: spin 1s linear infinite;
+}
+
+.center img.slowSpin {
+  animation: spin 2.5s ease infinite;
+}
+
+.center p {
+  color: #fff;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 20px;
+  text-align: center;
+}
+
+.center button {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  margin-top: 25px;
+  min-width: 100px;
+  width: 210px;
+  height: 35px;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}

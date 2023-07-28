@@ -1,0 +1,71 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+button,
+input {
+  user-select: none;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000;
+  overflow: hidden;
+  scroll-behavior: none;
+}
+
+img,
+svg {
+  -webkit-user-drag: none;
+  user-select: none;
+  image-rendering: -moz-crisp-edges;
+}
+
+p {
+  user-select: none;
+}
+
+.gradient-blue,
+.gradient-yellow {
+  position: absolute;
+  opacity: 35%;
+  width: 25%;
+  height: 25%;
+  border-radius: 25%;
+  filter: blur(200px);
+}
+
+.gradient-blue {
+  background-color: #00edff;
+  bottom: 0px;
+  left: 0px;
+}
+
+.gradient-yellow {
+  background-color: #fece00;
+  top: 0px;
+  right: 0px;
+}
+
+.hrefs {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  gap: 2.5px;
+  bottom: 2.5px;
+  transform: translateX(-50%);
+}
+
+.hrefs img {
+  width: 20px;
+  cursor: pointer;
+}
+
+@font-face {
+  font-family: "Silkscreen";
+  font-weight: 400;
+  src: url("../public/fonts/Silkscreen.ttf");
+}

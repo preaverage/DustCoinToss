@@ -1,0 +1,46 @@
+.walletConnect {
+  width: 100vw;
+  height: 100vh;
+}
+
+.walletConnect .center {
+  position: absolute;
+  display: flex;
+  width: fit-content;
+  flex-direction: column;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 1s linear;
+  cursor: pointer;
+}
+
+.walletConnect .center.loaded {
+  left: 150%;
+  transform: translate(-150%, -50%);
+}
+
+.walletConnect .center:hover img {
+  transform: rotateY(180deg);
+}
+
+.walletConnect p {
+  color: #fff;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.walletConnect .small {
+  margin-top: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.walletConnect img {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 150px;
+  transition: all 0.75s linear;
+}

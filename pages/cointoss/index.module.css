@@ -1,0 +1,87 @@
+.cointoss {
+  width: 100vw;
+  height: 100vh;
+}
+
+.cointoss .center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 1s linear;
+}
+
+.cointoss .center.left {
+  left: -225px;
+}
+
+.cointoss .center.loaded {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cointoss .center img {
+  width: 125px;
+  transition: all 0.75s linear;
+}
+
+.cointoss .center p {
+  color: #fff;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+.cointoss .center .sides,
+.cointoss .center .amounts {
+  display: flex;
+  gap: 10px;
+}
+
+.cointoss .center .amounts {
+  width: 210px;
+  flex-wrap: wrap;
+}
+
+.cointoss .center .sides button,
+.cointoss .center .amounts button {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  min-width: 100px;
+  width: 100px;
+  height: 35px;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.25s linear;
+}
+
+.cointoss .center .tossButton {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  min-width: 100px;
+  width: 210px;
+  height: 35px;
+  font-family: "Silkscreen";
+  font-weight: 400;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s linear;
+}
+
+.cointoss .center .tossButton.enabled {
+  border: 1px solid #fe3c00 !important;
+}
+
+.cointoss .center .buttonSelected {
+  border: 1px solid #fe3c00 !important;
+}
