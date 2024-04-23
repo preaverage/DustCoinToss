@@ -1,7 +1,9 @@
 import { GenerateSignatureProps } from "./interfaces";
 
 let oneTimeCode: string = "";
-const isDev = false;
+const isDev = process.env.NEXT_PUBLIC_IS_DEV;
+
+const fetchURL = isDev ? "http://localhost:8080" : process.env.API_URL;
 
 const generateSignature = async ({
   publicKey,
@@ -9,10 +11,16 @@ const generateSignature = async ({
 }: GenerateSignatureProps) => {
   if (
     document.cookie &&
-    document.cookie.split("signature=")[1].split(";")[0] !== undefined &&
-    document.cookie.split("wallet=")[1] === publicKey?.toString()
+    (document.cookie.match(
+      /^(?:.*;)?\s*game-signature\s*=\s*([^;]+)(?:.*)?$/
+    ) || [, null])[1] !== undefined &&
+    (document.cookie.match(
+      /^(?:.*;)?\s*game-signature\s*=\s*([^;]+)(?:.*)?$/
+    ) || [, null])[1] === publicKey?.toString()
   ) {
-    return document.cookie.split("signature=")[1].split(";")[0];
+    return (document.cookie.match(
+      /^(?:.*;)?\s*game-signature\s*=\s*([^;]+)(?:.*)?$/
+    ) || [, null])[1];
   }
 
   if (signMessage) {
@@ -25,15 +33,11 @@ const generateSignature = async ({
     try {
       const response = await signMessage(
         new TextEncoder().encode(
-          `I am signing a one time nonce for Dust Coin Toss. (${
+          `I am signing a one time nonce for Solana Coin Toss. (${
             oneTimeCode ? oneTimeCode : randomString
           })`
         )
       );
-
-      const fetchURL = isDev
-        ? "http://localhost:8080"
-        : "https://dust-coin-toss-backend.herokuapp.com";
 
       const fetchResponse = await (
         await fetch(`${fetchURL}/api/auth`, {
@@ -50,11 +54,11 @@ const generateSignature = async ({
       ).json();
 
       const expirationTime = new Date(
-        new Date().getTime() + 1000 * 60 * 60
+        new Date().getTime() + 1000 * 60 * 10
       ).toUTCString();
 
-      document.cookie = `signature=${fetchResponse.token}; expires=${expirationTime};`;
-      document.cookie = `wallet=${publicKey?.toString()}; expires=${expirationTime};`;
+      document.cookie = `game-signature=${fetchResponse.token}; expires=${expirationTime};`;
+      document.cookie = `game-wallet=${publicKey?.toString()}; expires=${expirationTime};`;
 
       return response;
     } catch {

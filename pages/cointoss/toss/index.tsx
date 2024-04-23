@@ -19,8 +19,7 @@ const Tossing = ({
     color: gameData.won ? "#00edff" : "#fece00",
   };
 
-  // const [text, setText] = useState("AWAITING DEPOSIT");
-  const [text, setText] = useState("TOSSING");
+  const [text, setText] = useState("AWAITING DEPOSIT");
 
   const updateText = (change: string) => {
     if (gameData.won !== undefined) {
@@ -31,37 +30,37 @@ const Tossing = ({
   };
 
   const handleCollect = async () => {
-    // if (gameData.won === undefined) return;
+    if (gameData.won === undefined) return;
 
-    // if (gameData.won) {
-    //   const response = await CollectWinnings({
-    //     gameData,
-    //     connection,
-    //     sendTransaction,
-    //   });
-    // }
+    if (gameData.won) {
+      const response = await CollectWinnings({
+        gameData,
+        connection,
+        sendTransaction,
+      });
+    }
 
     return close();
   };
 
-  // useEffect(() => {
-  //   if (gameData.won !== undefined) return;
-  //   if (isTxComplete && !text.includes("TOSSING")) {
-  //     return updateText("TOSSING");
-  //   }
+  useEffect(() => {
+    if (gameData.won !== undefined) return;
+    if (isTxComplete && !text.includes("TOSSING")) {
+      return updateText("TOSSING");
+    }
 
-  //   setTimeout(() => {
-  //     if (text.includes("...")) {
-  //       if (isTxComplete) {
-  //         return updateText("TOSSING");
-  //       }
+    setTimeout(() => {
+      if (text.includes("...")) {
+        if (isTxComplete) {
+          return updateText("TOSSING");
+        }
 
-  //       return updateText("AWAITING DEPOSIT");
-  //     }
+        return updateText("AWAITING DEPOSIT");
+      }
 
-  //     updateText(text + ".");
-  //   }, 750);
-  // }, [text]);
+      updateText(text + ".");
+    }, 750);
+  }, [text]);
 
   const audioElem = useRef() as React.MutableRefObject<HTMLAudioElement>;
   useEffect(() => {
@@ -87,7 +86,7 @@ const Tossing = ({
         <div>
           <p>{text}</p>
           <p>
-            {data.side} FOR {data.amount} DUST
+            {data.side} FOR {data.amount} SOL
           </p>
         </div>
       ) : (
@@ -97,7 +96,7 @@ const Tossing = ({
           </p>
 
           <button onClick={handleCollect}>
-            {gameData.won ? `COLLECT ${gameData.amount} DUST` : "TRY AGAIN"}
+            {gameData.won ? `COLLECT ${gameData.amount} SOL` : "TRY AGAIN"}
           </button>
         </div>
       )}

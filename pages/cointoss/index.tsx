@@ -8,6 +8,7 @@ import {
   generateTransaction,
   handleGame,
   handleFinish,
+  fetchAmounts,
 } from "../../utils/cointoss";
 import Tossing from "./toss";
 
@@ -22,7 +23,7 @@ const Button = ({ selected, select, side, amount }: ButtonProps) => {
       onClick={() => select(side ? side : amount)}
       className={isSelected ? styles.buttonSelected : ""}
     >
-      {side ? side : `${amount} DUST`}
+      {side ? side : `${amount} SOL`}
     </button>
   );
 };
@@ -34,10 +35,12 @@ const Cointoss = ({ isLoaded }: PageProps) => {
   const [gameData, setGameData] = useState(initData.gameData);
 
   const canToss = selectedData.side && selectedData.amount;
-  const renderData = {
+  const [renderData, setRenderData] = useState({
     sides: ["heads", "tails"],
-    amounts: [1, 5, 10, 15],
-  };
+    amounts: [],
+  });
+
+  const [balance, setBalance] = useState(0);
 
   const [isFlipping, setFlipping] = useState(false);
   const [isTxComplete, setTxComplete] = useState(false);
@@ -45,13 +48,27 @@ const Cointoss = ({ isLoaded }: PageProps) => {
     undefined as unknown as anchor.web3.Connection
   );
 
+  const fetchAmountsLocal = async () => {
+    const coinflipAmounts = await fetchAmounts();
+
+    setRenderData({
+      ...renderData,
+      amounts: coinflipAmounts,
+    });
+  };
+
   useEffect(() => {
     if (!isLoaded) return;
 
+    fetchAmountsLocal();
+
     const initialConnection = new anchor.web3.Connection(
-      anchor.web3.clusterApiUrl("mainnet-beta"),
+      anchor.web3.clusterApiUrl(
+        process.env.NEXT_PUBLIC_IS_DEV ? "devnet" : "mainnet-beta"
+      ),
       "confirmed"
     );
+
     setConnection(initialConnection);
   }, [isLoaded]);
 
@@ -60,6 +77,20 @@ const Cointoss = ({ isLoaded }: PageProps) => {
 
     runFinish();
   }, [isTxComplete]);
+
+  const updateBalance = async () => {
+    const balance = await connection.getBalance(
+      publicKey as anchor.web3.PublicKey
+    );
+
+    setBalance(balance / anchor.web3.LAMPORTS_PER_SOL);
+  };
+
+  useEffect(() => {
+    if (!isLoaded || !isTxComplete) return;
+
+    updateBalance();
+  }, [isLoaded, isTxComplete]);
 
   const select = (val: string | number | undefined) => {
     if (typeof val === "string") {
@@ -77,68 +108,57 @@ const Cointoss = ({ isLoaded }: PageProps) => {
     }
   };
 
-  // const handleClick = async () => {
-  //   const response = await handleToss({ selectedData });
-  //   if (!response) return;
+  const handleClick = async () => {
+    const response = await handleToss({ selectedData });
+    if (!response) return;
 
-  //   setGameData(response.gameData);
-  //   setSelectedData({
-  //     side: response.gameData.side as string,
-  //     amount: response.gameData.amount as number,
-  //   });
+    setGameData(response.gameData);
+    setSelectedData({
+      side: response.gameData.side as string,
+      amount: response.gameData.amount as number,
+    });
 
-  //   if (response.gameData.status === "complete") {
-  //     setTxComplete(true);
-  //     setFlipping(true);
+    if (response.gameData.status === "complete") {
+      setTxComplete(true);
+      setFlipping(true);
 
-  //     return;
-  //   }
+      return;
+    }
 
-  //   const transaction = await generateTransaction({
-  //     publicKey,
-  //     selectedData,
-  //     responseData: response.gameData,
-  //     connection,
-  //     signTransaction,
-  //   });
-  //   if (!transaction) {
-  //     return;
-  //   }
+    const transaction = await generateTransaction({
+      publicKey,
+      selectedData,
+      responseData: response.gameData,
+      connection,
+      signTransaction,
+    });
+    if (!transaction) {
+      return;
+    }
 
-  //   setFlipping(true);
-
-  //   try {
-  //     const sentTransaction = await sendTransaction(transaction, connection);
-  //     const submitGame = await handleGame({
-  //       responseData: response.gameData,
-  //       sentTransaction,
-  //     });
-
-  //     if (submitGame.status === "failed") {
-  //       setFlipping(false);
-  //       setGameData(initData.gameData);
-
-  //       return;
-  //     }
-
-  //     setGameData({ ...response.gameData, signature: sentTransaction });
-  //     setTxComplete(true);
-  //   } catch (err: unknown) {
-  //     setFlipping(false);
-
-  //     return;
-  //   }
-  // };
-
-  const handleClick = () => {
     setFlipping(true);
 
-    const randomChance = Math.random() < 0.5;
-    const randomTimeout = Math.floor(Math.random() * (2500 - 500 + 1)) + 500;
+    try {
+      const sentTransaction = await sendTransaction(transaction, connection);
+      const submitGame = await handleGame({
+        responseData: response.gameData,
+        sentTransaction,
+      });
 
-    setTimeout(() => {
-      setGameData({ ...selectedData, won: randomChance });
-    }, randomTimeout);
+      if (submitGame.status === "failed") {
+        setFlipping(false);
+        setGameData(initData.gameData);
+
+        return;
+      }
+
+      setGameData({ ...response.gameData, signature: sentTransaction });
+      setTxComplete(true);
+    } catch (err: unknown) {
+      setFlipping(false);
+
+      return;
+    }
   };
 
   const runFinish = async () => {
@@ -151,6 +171,10 @@ const Cointoss = ({ isLoaded }: PageProps) => {
 
   return (
     <div className={styles.cointoss}>
+      <div className={styles.header}>
+        <p>Balance: {balance}</p>
+      </div>
+
       {!isFlipping ? (
         <div
           className={`${styles.center} ${

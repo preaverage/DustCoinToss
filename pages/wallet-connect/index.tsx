@@ -3,7 +3,7 @@ import styles from "./index.module.css";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 
-// import generateSignature from "../../utils/generateSignature"; (Generates signature with API to authenticate user)
+import generateSignature from "../../utils/generateSignature";
 
 import { PageProps } from "../../utils/interfaces";
 import { useEffect, useRef } from "react";
@@ -15,16 +15,17 @@ const WalletConnect = ({ clickEvent, isLoaded }: PageProps) => {
   const walletConnectCenterRef = useRef<HTMLDivElement>(null);
 
   const handleClick = async () => {
-    // if (!connected) {
-    //   setVisible(true);
-    // } else {
-    //   const hasSigned = await generateSignature({ publicKey, signMessage });
-    //   if (!hasSigned) return;
+    if (!connected) {
+      setVisible(true);
+    } else {
+      const hasSigned = await generateSignature({ publicKey, signMessage });
 
-    //   if (clickEvent) clickEvent();
-    // }
+      if (!hasSigned) return;
 
-    if (clickEvent) clickEvent();
+      console.log(hasSigned);
+
+      if (clickEvent) clickEvent();
+    }
   };
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const WalletConnect = ({ clickEvent, isLoaded }: PageProps) => {
         onClick={handleClick}
         className={styles.center}
       >
-        <p>Dust</p>
+        <p>Solana</p>
         <img src="./logo-site.png" alt="" />
         <p>Coin Toss</p>
 

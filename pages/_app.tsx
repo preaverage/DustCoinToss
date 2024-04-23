@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import WalletConnect from "./wallet-connect";
 import Cointoss from "./cointoss";
@@ -40,6 +40,7 @@ const Renderer = () => {
 
     setTimeout(() => {
       setFinished(true);
+
       walletConnectPage.current?.remove();
     }, 700);
   };
@@ -47,7 +48,7 @@ const Renderer = () => {
   return (
     <>
       <Head>
-        <title>Dust Coin Toss</title>
+        <title>Solana Coin Toss</title>
         <link rel="icon" href="./logo-site.png" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
@@ -77,7 +78,9 @@ const Renderer = () => {
 };
 
 const WalletWrapper = () => {
-  const network = WalletAdapterNetwork.Mainnet;
+  const network = process.env.NEXT_PUBLIC_IS_DEV
+    ? WalletAdapterNetwork.Devnet
+    : WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = useMemo(
